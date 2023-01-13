@@ -10,6 +10,7 @@ pkgs.mkShell {
     curl
     file # BB binary patching.
     git
+    gfortran
     patchelf # BB binary patching.
     perl
     python3
