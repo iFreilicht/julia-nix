@@ -4,14 +4,17 @@ branches are kept in their respective branches with names mirroring the
 [upstream Julia repository][upstream]; `master` tracks the ongoing development
 upstream but with patches added to make hacking on Julia feasible from NixOS.
 
+This is a fork to add darwin-x86 and darwin-aarch64 support. See the [original fork by ninjin][ninjin-fork]
+
 [julia]: https://julialang.org
 [nix]: https://nixos.org
 [upstream]: https://github.com/JuliaLang/julia
+[ninjin-fork]: git@git.sr.ht:~ninjin/julia-nix
 
 For example, this is how you build the latest `master`:
 
 ```sh
-> git clone git@git.sr.ht:~ninjin/julia-nix
+> git clone git@github.com:iFreilicht/julia-nix.git
 …
 > cd julia-nix
 > git pull --rebase git@github.com:JuliaLang/julia.git
