@@ -16,5 +16,8 @@ pkgs.mkShell {
     python3
     stdenv # BB binary patching.
     which
+  ] ++ lib.optionals stdenv.isDarwin [
+    xcbuild
+    darwin.DarwinTools
   ];
 }

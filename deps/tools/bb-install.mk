@@ -17,6 +17,9 @@ TRIPLET_VAR := $$(TRIPLET_VAR)_CXXABI
 endif
 endif
 
+# Check if we're building for nixpkgs
+IS_NIX := $$(shell ([ -z "${NIX_CC}" ]) && echo 1 || echo 0)
+
 # Look for JLL version within Project.toml in stdlib/
 $(2)_STDLIB_PATH := $(JULIAHOME)/stdlib/$$($(2)_JLL_NAME)_jll
 
@@ -34,8 +37,6 @@ $(2)_BB_TRIPLET := $$($$(TRIPLET_VAR))
 $(2)_JLL_VER_NOPLUS := $$(firstword $$(subst +,$(SPACE),$$($(2)_JLL_VER)))
 $(2)_JLL_BASENAME := $$($(2)_JLL_DOWNLOAD_NAME).v$$($(2)_JLL_VER).$$($(2)_BB_TRIPLET)$$($(2)_JLL_TAGS).tar.gz
 $(2)_BB_URL := https://github.com/JuliaBinaryWrappers/$$($(2)_JLL_DOWNLOAD_NAME)_jll.jl/releases/download/$$($(2)_JLL_DOWNLOAD_NAME)-v$$($(2)_JLL_VER)/$$($(2)_JLL_DOWNLOAD_NAME).v$$($(2)_JLL_VER_NOPLUS).$$($(2)_BB_TRIPLET)$$($(2)_JLL_TAGS).tar.gz
-
-IS_NIXOS := $$(shell ([ -f /etc/NIXOS ] || ([ -f /etc/os-release ] && grep '^ID=nixos$$$$' /etc/os-release > /dev/null)) && echo 1 || echo 0)
 
 $$(SRCCACHE)/$$($(2)_JLL_BASENAME): | $$(SRCCACHE)
 	$$(JLDOWNLOAD) $$@ $$($(2)_BB_URL)
@@ -60,7 +61,7 @@ ifneq (bsdtar,$(findstring bsdtar,$(TAR_TEST)))
 	$(TAR) -tzf $$< | xargs -n 1 dirname | sort -u | (cd $$(build_prefix) && xargs -t mkdir -p)
 endif
 	$(UNTAR) $$< -C $$(build_prefix)
-ifeq ($(IS_NIXOS), 1)
+ifeq ($(IS_NIX), 1)
 	@# Patch not only the interpreter, but also `rpath` since Binary Builder
 	@# allows binaries to reference shared libraries shipped with Julia.
 	$(TAR) -tf $$< | (cd $$(build_prefix) && xargs file --mime | grep 'application/x-executable' | cut -f 1 -d ':' | xargs -r patchelf --set-interpreter "$$$$(cat $$$$NIX_CC/nix-support/dynamic-linker)" --set-rpath '$$$$ORIGIN/../lib' )
